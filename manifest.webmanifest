@@ -1,0 +1,9 @@
+{
+  "name":"FingerROM AI v11",
+  "short_name":"FingerROM",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f5f7fb",
+  "theme_color":"#1261a0",
+  "icons":[]
+}
