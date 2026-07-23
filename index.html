@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1261a0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FingerROM AI" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>FingerROM AI v11.1.3</title>
+  <style>
+    :root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#64748b;--line:#d8e0ec;--accent:#1261a0;--danger:#b42318;--ok:#067647;--warn:#b54708}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+    header{padding:calc(14px + env(safe-area-inset-top)) 16px 8px;max-width:980px;margin:auto}h1{font-size:22px;margin:0 0 4px}.subtitle{font-size:13px;color:var(--muted);line-height:1.5}
+    main{max-width:980px;margin:auto;padding:8px 12px 28px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 3px 14px rgba(15,23,42,.05)}
+    .sectionTitle{font-size:14px;font-weight:800;margin:0 0 10px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field select,.field input,.btn{width:100%;min-height:44px;border-radius:11px;border:1px solid var(--line);background:#fff;padding:9px 10px;font-size:16px}.btn{cursor:pointer;font-weight:800}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.capture{background:var(--ok);border-color:var(--ok);color:#fff}.btn.danger{color:var(--danger)}.btn:disabled{opacity:.5;cursor:not-allowed}
+    .stage{position:relative;width:100%;min-height:300px;border-radius:14px;overflow:hidden;background:#101827;display:flex;align-items:center;justify-content:center}.stage video{display:none}.stage canvas{display:block;width:100%;height:auto;touch-action:none}.placeholder{color:#cbd5e1;text-align:center;padding:50px 20px;line-height:1.6}.badge{position:absolute;top:10px;left:10px;z-index:3;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:800;background:rgba(15,23,42,.8);color:#fff}.badge.ok{background:rgba(6,118,71,.9)}.badge.warn{background:rgba(181,71,8,.9)}
+    .results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:12px;padding:10px}.metric .name{font-size:12px;color:var(--muted)}.metric .value{font-size:24px;font-weight:800;margin-top:3px}.metric .type{font-size:11px;margin-top:2px}.okText{color:var(--ok)}.warnText{color:var(--danger)}
+    .actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.captureFloat{position:absolute;right:14px;bottom:14px;z-index:6;width:82px;height:82px;border-radius:50%;border:3px solid rgba(255,255,255,.85);background:var(--ok);color:#fff;font-size:14px;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.32);padding:8px;line-height:1.2}.captureFloat:disabled{opacity:.45}.orientationGuide{position:absolute;left:50%;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;background:rgba(15,23,42,.78);color:#fff;font-size:13px;font-weight:900;letter-spacing:.02em;pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.2)}.orientationGuide.top{top:10px}.orientationGuide.bottom{bottom:10px}.orientationGuide .arrow{font-size:18px;line-height:1}.portraitWarning{display:none;position:absolute;inset:0;z-index:9;align-items:center;justify-content:center;background:rgba(15,23,42,.84);color:#fff;text-align:center;padding:24px;font-size:18px;font-weight:900;line-height:1.6}.portraitWarning.show{display:flex}.landscapeMark{display:inline-block;margin-top:10px;font-size:34px}.savedResult{display:none;margin-top:12px;border:2px solid #9fd4b9;background:#f0fff7;border-radius:14px;padding:12px}.savedResult.show{display:block}.savedTitle{font-size:13px;font-weight:800;color:var(--ok);margin-bottom:8px}.savedGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.savedCell{background:#fff;border:1px solid #cfe8da;border-radius:10px;padding:8px;text-align:center}.savedCell b{display:block;font-size:20px;margin-top:3px}.status{font-size:13px;margin-top:8px}.notice{font-size:12px;color:var(--muted);line-height:1.55}.scroll{overflow:auto}.history{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}.history th,.history td{border-bottom:1px solid var(--line);padding:7px 5px;text-align:right;white-space:nowrap}.history th:first-child,.history td:first-child{text-align:left}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.toolbar .btn{width:auto;min-width:130px}.pill{display:inline-block;border-radius:999px;padding:5px 8px;background:#eef5fb;color:#234;font-size:12px}.install{display:none}
+    .reviewOverlay{display:none;position:fixed;inset:0;z-index:50;background:rgba(2,6,23,.96);padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));flex-direction:column;gap:8px;overflow-y:auto;-webkit-overflow-scrolling:touch}.reviewOverlay.show{display:flex}.reviewHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#fff;position:sticky;top:0;z-index:4;background:rgba(2,6,23,.96);padding:2px 0}.reviewHeader strong{font-size:16px}.reviewHint{font-size:12px;color:#cbd5e1;line-height:1.4}.reviewCanvasWrap{position:relative;flex:0 0 auto;min-height:0;display:block;overflow:auto;border-radius:12px;background:#000}.reviewCanvas{display:block;width:100%;max-width:none;max-height:none;height:auto;touch-action:none}.reviewBottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;z-index:4;background:rgba(2,6,23,.96);padding-top:4px}.reviewBottom .btn{min-height:50px}.btn.edit{background:#f59e0b;border-color:#f59e0b;color:#fff}.btn.confirm{background:var(--ok);border-color:var(--ok);color:#fff}.reviewValues{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.reviewValue{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;text-align:center;padding:6px;font-size:12px}.reviewValue b{display:block;font-size:20px;margin-top:2px}.editHandle{pointer-events:none}
+    .modeTabs{display:none}.cameraModeStack{position:absolute;right:14px;bottom:108px;z-index:6;display:flex;flex-direction:column;gap:8px;width:82px}.cameraModeStack .modeTab{width:100%;min-height:48px;border:2px solid rgba(255,255,255,.88);border-radius:12px;background:rgba(255,255,255,.94);color:#172033;font-weight:900;font-size:14px;box-shadow:0 5px 16px rgba(0,0,0,.25)}.cameraModeStack .modeTab.active{background:#7c3aed;border-color:#fff;color:#fff}.sessionInfo{font-size:12px;color:var(--muted);margin-top:8px}.fingerTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}.fingerTab{min-height:46px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:800;font-size:15px}.fingerTab.active{background:var(--accent);border-color:var(--accent);color:#fff}.captureGuide{margin-top:10px;border:1px solid #b9d7ef;background:#f2f8fd;border-radius:13px;padding:11px}.captureGuideTitle{font-size:15px;font-weight:900}.captureGuideText{font-size:13px;line-height:1.55;margin-top:4px}.viewBadge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;border-radius:999px;padding:6px 9px;background:#eef5fb;font-size:12px;font-weight:800}.viewBadge.match{background:#ecfdf3;color:#067647}.viewBadge.mismatch{background:#fff4ed;color:#b54708}.fingerStageGuide{position:absolute;left:10px;right:104px;top:52px;z-index:5;background:rgba(15,23,42,.76);color:#fff;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:800;line-height:1.4;pointer-events:none}.selectedFingerBadge{position:absolute;right:10px;top:10px;z-index:5;border-radius:999px;padding:7px 10px;background:rgba(18,97,160,.92);color:#fff;font-size:12px;font-weight:900;pointer-events:none}
+    @media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr 1fr}.results,.savedGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.stage{min-height:260px}.metric .value{font-size:22px}.captureFloat{right:10px;bottom:10px;width:76px;height:76px}.cameraModeStack{right:10px;bottom:96px;width:76px}.cameraModeStack .modeTab{min-height:44px;font-size:13px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>FingerROM AI <span style="font-size:12px;color:#667085">v11.1.3</span></h1>
+  <div class="subtitle">端末を横向きにし、画像の上側を背側、下側を掌側として、指背側面基準で、母指はMP・IP、示指〜小指はMCP・PIP・DIPを測定します。</div>
+</header>
+<main>
+  <section class="card">
+    <h2 class="sectionTitle">1. このタブの患者</h2>
+    <div class="grid">
+      <div class="field"><label for="patientId">症例コード（必須）</label><input id="patientId" autocomplete="off" inputmode="text" placeholder="例：CASE-001" required /></div>
+      <div class="field"><label for="examDate">測定日</label><input id="examDate" readonly /></div>
+      <div class="field"><label for="examiner">検者（任意）</label><input id="examiner" autocomplete="off" placeholder="例：HY" /></div>
+      <div class="field"><label for="side">左右</label><select id="side"><option value="右">右</option><option value="左">左</option></select></div>
+      <select id="finger" hidden aria-hidden="true"><option value="thumb">母指</option><option value="index">示指</option><option value="middle">中指</option><option value="ring">環指</option><option value="pinky">小指</option></select>
+      <input id="position" type="hidden" value="最大自動屈曲" />
+      <div class="field"><label for="visit">時点（任意）</label><input id="visit" autocomplete="off" placeholder="例：術後6週" /></div>
+      <div class="field"><label for="cameraFacing">カメラ</label><select id="cameraFacing"><option value="environment">背面カメラ</option><option value="user">前面カメラ</option></select></div>
+    </div>
+    <div class="sessionInfo">このページを閉じると記録は消えます。新しいWebタブを開くと、新しい患者として開始します。</div>
+    <div class="fingerTabs" role="tablist" aria-label="測定する指">
+      <button class="fingerTab active" data-finger="thumb" type="button">母指</button>
+      <button class="fingerTab" data-finger="index" type="button">示指</button>
+      <button class="fingerTab" data-finger="middle" type="button">中指</button>
+      <button class="fingerTab" data-finger="ring" type="button">環指</button>
+      <button class="fingerTab" data-finger="pinky" type="button">小指</button>
+    </div>
+    <div class="captureGuide">
+      <div id="captureGuideTitle" class="captureGuideTitle">母指：橈側側面から撮影</div>
+      <div id="captureGuideText" class="captureGuideText">母指の中手骨・基節骨・末節骨が側面で見えるように撮影してください。</div>
+      <div id="viewDirection" class="viewBadge">撮影方向：未判定</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="sectionTitle">2. リアルタイム測定</h2>
+    <div class="actions">
+      <button id="start" class="btn primary" disabled>カメラ開始</button>
+      <button id="stop" class="btn" disabled>停止</button>
+      <button id="switchCamera" class="btn">カメラ切替</button>
+    </div>
+    <div class="status" id="status">AIモデルを準備しています。</div>
+    <p class="notice">必ず端末を横向きにし、画像の下側が掌側、上側が背側になる向きで撮影してください。各指節の上側輪郭を背側面として検出し、母指ではMP・IP、示指〜小指ではMCP・PIP・DIPを算出します。「測定撮影」で画像を固定すると直ちに基線修正画面へ移り、修正後に確定保存できます。角度は屈曲を＋、伸展を−で表示します。最初に測定指を選ぶと、その指だけを解析します。撮影方向表示は母指ランドマークからの補助的な推定です。</p>
+  </section>
+
+  <section class="card">
+    <div class="stage" id="stage">
+      <div class="placeholder" id="placeholder">指の側面にカメラを垂直に向け、<br><b>掌側を画面下、背側を画面上</b>にしてください。</div>
+      <video id="video" playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div id="stability" class="badge">待機中</div>
+      <div id="selectedFingerBadge" class="selectedFingerBadge">測定指：母指</div>
+      <div id="fingerStageGuide" class="fingerStageGuide">橈側側面／母指全体を側面で表示</div>
+      <div class="orientationGuide top"><span class="arrow">↑</span>背側</div>
+      <div class="orientationGuide bottom"><span class="arrow">↓</span>掌側</div>
+      <div id="portraitWarning" class="portraitWarning">端末を横向きにしてください<span class="landscapeMark">↻</span></div>
+      <div class="cameraModeStack" role="tablist" aria-label="屈曲または伸展">
+        <button class="modeTab active" data-mode="flex" type="button">屈曲</button>
+        <button class="modeTab" data-mode="ext" type="button">伸展</button>
+      </div>
+      <button id="capture" class="captureFloat" disabled>測定<br>撮影</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="results" id="results">
+      <div class="metric" id="metric1"><div class="name" id="metric1Name">MCP</div><div class="value" id="mcp">—</div><div class="type" id="mcpType"></div></div>
+      <div class="metric" id="metric2"><div class="name" id="metric2Name">PIP</div><div class="value" id="pip">—</div><div class="type" id="pipType"></div></div>
+      <div class="metric" id="metric3"><div class="name" id="metric3Name">DIP</div><div class="value" id="dip">—</div><div class="type" id="dipType"></div></div>
+    </div>
+    <div id="savedResult" class="savedResult">
+      <div id="savedTitle" class="savedTitle">保存した測定結果</div>
+      <div class="savedGrid">
+        <div class="savedCell" id="savedCell1"><span id="savedName1">MCP</span><b id="savedMcp">—</b></div>
+        <div class="savedCell" id="savedCell2"><span id="savedName2">PIP</span><b id="savedPip">—</b></div>
+        <div class="savedCell" id="savedCell3"><span id="savedName3">DIP</span><b id="savedDip">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="sectionTitle">3. このタブの測定データ</h2>
+    <div><span id="recordCount" class="pill">0件</span></div>
+    <div class="scroll"><table class="history"><thead><tr><th>日時</th><th>ID</th><th>検者</th><th>左右</th><th>指</th><th>肢位</th><th>時点</th><th>関節1</th><th>関節2</th><th>関節3</th></tr></thead><tbody id="history"><tr><td colspan="10" style="text-align:center;color:#64748b">未保存</td></tr></tbody></table></div>
+    <div class="toolbar">
+      <button id="csv" class="btn" disabled>患者データをCSV出力</button>
+      <button id="clear" class="btn danger">このタブの記録を消去</button>
+      <button id="install" class="btn primary install">ホーム画面に追加</button>
+    </div>
+    <p class="notice"><b>保存方法：</b>測定ごとの自動ダウンロードは行いません。確定した結果はこのタブを開いている間だけ保持され、「患者データをCSV出力」を押した時だけ1ファイルを保存します。<br><b>測定条件：</b>必ず掌側を画像下、背側を画像上にして撮影します。各指節について画像上方の皮膚輪郭を背側面として推定し、隣接する背側面同士の角度を測定します。これは骨軸ではなく外表面基準です。現状は研究用プロトタイプです。</p>
+  </section>
+</main>
+<div id="reviewOverlay" class="reviewOverlay" aria-hidden="true">
+  <div class="reviewHeader"><strong>基線の修正</strong><span id="reviewModeLabel">修正中</span></div>
+  <div class="reviewHint">5つの連結点をドラッグして修正してください。中間点を動かすと、前後の基線が同時に追従します。角度は0°を基準に、屈曲を＋、伸展を−で表示します。画面上＝背側、画面下＝掌側です。</div>
+  <div class="reviewValues">
+    <div class="reviewValue" id="reviewValue1"><span id="reviewName1">MCP</span><b id="reviewMcp">—</b></div>
+    <div class="reviewValue" id="reviewValue2"><span id="reviewName2">PIP</span><b id="reviewPip">—</b></div>
+    <div class="reviewValue" id="reviewValue3"><span id="reviewName3">DIP</span><b id="reviewDip">—</b></div>
+  </div>
+  <div class="reviewCanvasWrap"><canvas id="reviewCanvas" class="reviewCanvas"></canvas></div>
+  <div class="reviewBottom">
+    <button id="retake" class="btn">撮り直し</button>
+    <button id="confirmMeasurement" class="btn confirm">確定・保存</button>
+  </div>
+</div>
+<script type="module">
+import { FilesetResolver, HandLandmarker } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+const $=id=>document.getElementById(id),video=$('video'),canvas=$('canvas'),ctx=canvas.getContext('2d'),reviewCanvas=$('reviewCanvas'),reviewCtx=reviewCanvas.getContext('2d');
+const rawFrame=document.createElement('canvas'),rawCtx=rawFrame.getContext('2d');
+const fingerMap={thumb:[1,2,3,4],index:[5,6,7,8],middle:[9,10,11,12],ring:[13,14,15,16],pinky:[17,18,19,20]};
+const fingerGuides={
+  thumb:{name:'母指',view:'橈側側面',hint:'母指の中手骨・基節骨・末節骨が側面で見えるように撮影してください。',stage:'橈側側面／母指全体を側面で表示',expected:'radial'},
+  index:{name:'示指',view:'橈側側面',hint:'母指が手前に見える方向から撮影してください。',stage:'橈側側面／母指が手前',expected:'radial'},
+  middle:{name:'中指',view:'橈側側面',hint:'示指を少し伸展させ、中指DIPの背側輪郭を見せてください。',stage:'橈側側面／示指を少し伸展',expected:'radial'},
+  ring:{name:'環指',view:'尺側側面',hint:'小指を少し伸展させ、環指DIPの背側輪郭を見せてください。',stage:'尺側側面／小指を少し伸展',expected:'ulnar'},
+  pinky:{name:'小指',view:'尺側側面',hint:'母指が手前に見えない方向から撮影してください。',stage:'尺側側面／母指は手前にしない',expected:'ulnar'}
+};
+let model=null,stream=null,running=false,raf=0,lastVideoTime=-1,lastPoints=null,latest=null,angleBuffer=[],deferredPrompt=null;
+let dorsalLines=null,reviewNodes=null,reviewValues=null,reviewing=false,editingLines=false,dragNode=null,reviewMeta=null;
+let history=[];
+let measurementMode='flex';
+const sessionStarted=new Date();
+const pad=n=>String(n).padStart(2,'0');
+const sessionPatientId=`P${sessionStarted.getFullYear()}${pad(sessionStarted.getMonth()+1)}${pad(sessionStarted.getDate())}_${pad(sessionStarted.getHours())}${pad(sessionStarted.getMinutes())}${pad(sessionStarted.getSeconds())}`;
+$('patientId').value='';
+$('examDate').value=`${sessionStarted.getFullYear()}-${pad(sessionStarted.getMonth()+1)}-${pad(sessionStarted.getDate())}`;
+async function init(){
+  $('status').textContent='AIモデルを読み込み中です…';
+  try{
+    const vision=await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+    const common={
+      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'},
+      runningMode:'VIDEO',numHands:1,
+      minHandDetectionConfidence:.45,minHandPresenceConfidence:.45,minTrackingConfidence:.45
+    };
+    try{
+      model=await HandLandmarker.createFromOptions(vision,{...common,baseOptions:{...common.baseOptions,delegate:'GPU'}});
+      $('status').textContent='モデル準備完了（GPU）。カメラを開始してください。';
+    }catch(gpuError){
+      console.warn('GPU初期化に失敗。CPUへ切替',gpuError);
+      model=await HandLandmarker.createFromOptions(vision,{...common,baseOptions:{...common.baseOptions,delegate:'CPU'}});
+      $('status').textContent='モデル準備完了（互換モード）。カメラを開始してください。';
+    }
+    $('start').disabled=false;
+  }catch(e){
+    $('status').textContent='AIモデル読込エラー：'+(e?.message||String(e));
+    $('status').style.color='#b42318';
+    console.error(e);
+  }
+}
+init();renderHistory();
+$('start').addEventListener('click',startCamera);$('stop').addEventListener('click',stopCamera);$('capture').addEventListener('click',capture);$('csv').addEventListener('click',downloadCSV);$('clear').addEventListener('click',clearHistory);$('switchCamera').addEventListener('click',switchCamera);
+$('retake').addEventListener('click',retake);$('confirmMeasurement').addEventListener('click',confirmMeasurement);reviewCanvas.addEventListener('pointerdown',reviewPointerDown);reviewCanvas.addEventListener('pointermove',reviewPointerMove);reviewCanvas.addEventListener('pointerup',reviewPointerUp);reviewCanvas.addEventListener('pointercancel',reviewPointerUp);
+document.querySelectorAll('.modeTab').forEach(btn=>btn.addEventListener('click',()=>selectMode(btn.dataset.mode)));
+document.querySelectorAll('.fingerTab').forEach(btn=>btn.addEventListener('click',()=>selectFinger(btn.dataset.finger)));
+$('finger').addEventListener('change',()=>selectFinger($('finger').value));
+function selectMode(mode){
+  measurementMode=mode==='ext'?'ext':'flex';
+  $('position').value=measurementMode==='flex'?'最大自動屈曲':'最大自動伸展';
+  document.querySelectorAll('.modeTab').forEach(b=>b.classList.toggle('active',b.dataset.mode===measurementMode));
+  $('status').textContent=measurementMode==='flex'?'屈曲撮影モードです。':'伸展撮影モードです。';
+}
+function configureJointUI(isThumb){
+  const names=isThumb?['MP','IP','']:['MCP','PIP','DIP'];
+  $('metric1Name').textContent=names[0];$('metric2Name').textContent=names[1];$('metric3Name').textContent=names[2];$('metric3').style.display=isThumb?'none':'';
+  $('savedName1').textContent=names[0];$('savedName2').textContent=names[1];$('savedName3').textContent=names[2];$('savedCell3').style.display=isThumb?'none':'';
+  $('reviewName1').textContent=names[0];$('reviewName2').textContent=names[1];$('reviewName3').textContent=names[2];$('reviewValue3').style.display=isThumb?'none':'';
+  $('results').style.gridTemplateColumns=isThumb?'repeat(2,minmax(0,1fr))':'repeat(3,minmax(0,1fr))';
+  document.querySelector('.savedGrid').style.gridTemplateColumns=isThumb?'repeat(2,minmax(0,1fr))':'repeat(3,minmax(0,1fr))';
+  document.querySelector('.reviewValues').style.gridTemplateColumns=isThumb?'repeat(2,1fr)':'repeat(3,1fr)';
+}
+function selectFinger(key){
+  if(!fingerGuides[key])return;
+  $('finger').value=key;angleBuffer=[];dorsalLines=null;lastPoints=null;configureJointUI(key==='thumb');['mcp','pip','dip'].forEach(id=>$(id).textContent='—');
+  document.querySelectorAll('.fingerTab').forEach(b=>b.classList.toggle('active',b.dataset.finger===key));
+  const g=fingerGuides[key];$('captureGuideTitle').textContent=`${g.name}：${g.view}から撮影`;$('captureGuideText').textContent=g.hint;$('selectedFingerBadge').textContent=`測定指：${g.name}`;$('fingerStageGuide').textContent=g.stage;
+  $('viewDirection').textContent='撮影方向：未判定';$('viewDirection').className='viewBadge';
+}
+selectMode('flex');selectFinger($('finger').value);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('install').style.display='block'});$('install').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('install').style.display='none'}else{alert('iPhoneではSafariの共有ボタンから「ホーム画面に追加」を選んでください。')}});
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});}
+function updateOrientationGuide(){
+  const portrait=window.innerHeight>window.innerWidth;
+  const w=$('portraitWarning');
+  if(w)w.classList.toggle('show',portrait);
+}
+window.addEventListener('resize',updateOrientationGuide);
+window.addEventListener('orientationchange',()=>setTimeout(updateOrientationGuide,150));
+updateOrientationGuide();
+
+async function startCamera(){if(!model){$('status').textContent='モデル準備中です。';return}try{stopTracks();stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:$('cameraFacing').value},width:{ideal:1280},height:{ideal:720}},audio:false});video.srcObject=stream;await video.play();canvas.width=video.videoWidth||1280;canvas.height=video.videoHeight||720;$('placeholder').style.display='none';$('start').disabled=true;$('stop').disabled=false;running=true;lastVideoTime=-1;angleBuffer=[];$('status').textContent='リアルタイム測定中。側面像を保持してください。';loop()}catch(e){$('status').textContent='カメラを開始できません。Safari/Chromeのカメラ許可とHTTPSを確認してください。';console.error(e)}}
+function stopTracks(){stream?.getTracks().forEach(t=>t.stop());stream=null}
+function stopCamera(){running=false;cancelAnimationFrame(raf);stopTracks();video.srcObject=null;$('start').disabled=false;$('stop').disabled=true;$('capture').disabled=true;$('stability').textContent='停止中';$('stability').className='badge';$('status').textContent='カメラを停止しました。'}
+async function switchCamera(){$('cameraFacing').value=$('cameraFacing').value==='environment'?'user':'environment';if(running)await startCamera()}
+function loop(){if(!running)return;if(video.readyState>=2&&video.currentTime!==lastVideoTime){lastVideoTime=video.currentTime;canvas.width=video.videoWidth;canvas.height=video.videoHeight;ctx.save();if($('cameraFacing').value==='user'){ctx.translate(canvas.width,0);ctx.scale(-1,1)}ctx.drawImage(video,0,0,canvas.width,canvas.height);ctx.restore();rawFrame.width=canvas.width;rawFrame.height=canvas.height;rawCtx.clearRect(0,0,rawFrame.width,rawFrame.height);rawCtx.drawImage(canvas,0,0);const result=model.detectForVideo(video,performance.now());if(result.landmarks?.length)processLandmarks(result.landmarks[0]);else{lastPoints=null;latest=null;angleBuffer=[];setNoHand()}}raf=requestAnimationFrame(loop)}
+function processLandmarks(lm){
+  const ids=fingerMap[$('finger').value],flip=$('cameraFacing').value==='user';
+  const p=id=>({x:(flip?1-lm[id].x:lm[id].x)*canvas.width,y:lm[id].y*canvas.height});
+  const palmIds=[0,5,9,13,17], palmPts=palmIds.map(p);
+  const palmCenter={x:palmPts.reduce((sum,q)=>sum+q.x,0)/palmPts.length,y:palmPts.reduce((sum,q)=>sum+q.y,0)/palmPts.length};
+  updateViewDirection(lm,flip,palmCenter);
+  const isThumb=$('finger').value==='thumb';
+  let targetPoints;
+  if(isThumb){
+    targetPoints=[p(ids[0]),p(ids[1]),p(ids[2]),p(ids[3])];
+  }else{
+    const wrist=p(0),mcp=p(ids[0]),pip=p(ids[1]),dip=p(ids[2]),tip=p(ids[3]);
+    const met={x:mcp.x+(wrist.x-mcp.x)*.62,y:mcp.y+(wrist.y-mcp.y)*.62};
+    targetPoints=[met,mcp,pip,dip,tip];
+  }
+  lastPoints=smoothPoints(lastPoints,targetPoints,.45);
+  dorsalLines=estimateDorsalLines(lastPoints,palmCenter);
+  const vals=isThumb?{
+    m:angleBetweenLines(dorsalLines[0],dorsalLines[1]),
+    p:angleBetweenLines(dorsalLines[1],dorsalLines[2]),
+    d:null
+  }:{
+    m:angleBetweenLines(dorsalLines[0],dorsalLines[1]),
+    p:angleBetweenLines(dorsalLines[1],dorsalLines[2]),
+    d:angleBetweenLines(dorsalLines[2],dorsalLines[3])
+  };
+  angleBuffer.push(vals);if(angleBuffer.length>8)angleBuffer.shift();
+  latest=averageAngles(angleBuffer);drawOverlay(lastPoints,latest,dorsalLines);setResults(latest);updateStability();$('capture').disabled=false
+}
+function updateViewDirection(lm,flip,palmCenter){
+  const pt=id=>({x:(flip?1-lm[id].x:lm[id].x)*canvas.width,y:lm[id].y*canvas.height,z:lm[id].z||0});
+  const thumb=[1,2,3,4].map(pt), tip=thumb[3], base=thumb[0];
+  const sep=Math.hypot(tip.x-palmCenter.x,tip.y-palmCenter.y)/Math.max(1,canvas.width);
+  const thumbSpread=Math.hypot(tip.x-base.x,tip.y-base.y)/Math.max(1,canvas.width);
+  const visible=sep>.075 && thumbSpread>.035;
+  const inferred=visible?'radial':'ulnar';
+  const label=inferred==='radial'?'橈側側面（母指あり）':'尺側側面（母指なし）';
+  const expected=fingerGuides[$('finger').value].expected, el=$('viewDirection');
+  el.textContent=`撮影方向（推定）：${label}${inferred===expected?' ✓':' — 推奨方向と異なります'}`;
+  el.className='viewBadge '+(inferred===expected?'match':'mismatch');
+}
+function smoothPoints(prev,next,a){if(!prev)return next;return next.map((q,i)=>({x:prev[i].x*(1-a)+q.x*a,y:prev[i].y*(1-a)+q.y*a}))}
+function averageAngles(arr){const avg=k=>{const vals=arr.map(v=>v[k]).filter(v=>Number.isFinite(v));return vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:null};return{m:avg('m'),p:avg('p'),d:avg('d')}}
+function px(x,y){x=Math.max(0,Math.min(canvas.width-1,Math.round(x)));y=Math.max(0,Math.min(canvas.height-1,Math.round(y)));const d=ctx.getImageData(x,y,1,1).data;return[d[0],d[1],d[2]]}
+function colorDistance(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])}
+function segmentNormal(a,b,palmCenter){
+  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+  let n={x:-dy/len,y:dx/len};
+  // 撮影条件を固定：画像下が掌側、画像上が背側。
+  // したがって、指の屈曲・伸展にかかわらず常に上向き（yが小さくなる側）の法線を選ぶ。
+  if(n.y>0)n={x:-n.x,y:-n.y};
+  return n
+}
+function dorsalEdgeAt(center,n,maxScan,minScan){
+  const skin=px(center.x,center.y);
+  let best={score:-Infinity,p:{x:center.x+n.x*minScan,y:center.y+n.y*minScan}};
+  for(let r=minScan;r<=maxScan;r+=2){
+    const qIn={x:center.x+n.x*Math.max(0,r-3),y:center.y+n.y*Math.max(0,r-3)};
+    const qOut={x:center.x+n.x*Math.min(maxScan,r+4),y:center.y+n.y*Math.min(maxScan,r+4)};
+    const inside=px(qIn.x,qIn.y),outside=px(qOut.x,qOut.y);
+    const boundary=colorDistance(inside,outside);
+    const leavingSkin=colorDistance(skin,outside);
+    // 皮膚内部のしわより、皮膚から背景へ抜ける変化を優先する。
+    const score=boundary*.45+leavingSkin*.55+r*.025;
+    if(score>best.score)best={score,p:{x:center.x+n.x*r,y:center.y+n.y*r}};
+  }
+  return best.p
+}
+function fitLine(points,fallbackA,fallbackB){if(points.length<2)return[fallbackA,fallbackB];const mx=points.reduce((s,p)=>s+p.x,0)/points.length,my=points.reduce((s,p)=>s+p.y,0)/points.length;let sxx=0,syy=0,sxy=0;points.forEach(p=>{const x=p.x-mx,y=p.y-my;sxx+=x*x;syy+=y*y;sxy+=x*y});const theta=.5*Math.atan2(2*sxy,sxx-syy),ux=Math.cos(theta),uy=Math.sin(theta);const len=Math.max(20,Math.hypot(fallbackB.x-fallbackA.x,fallbackB.y-fallbackA.y)*.9);let a={x:mx-ux*len/2,y:my-uy*len/2},b={x:mx+ux*len/2,y:my+uy*len/2};const fd={x:fallbackB.x-fallbackA.x,y:fallbackB.y-fallbackA.y};if((b.x-a.x)*fd.x+(b.y-a.y)*fd.y<0)[a,b]=[b,a];return[a,b]}
+function estimateSurfaceLine(a,b,palmCenter){const n=segmentNormal(a,b,palmCenter),segLen=Math.hypot(b.x-a.x,b.y-a.y),maxScan=Math.max(16,Math.min(70,segLen*.62)),minScan=Math.max(4,segLen*.08),pts=[];[.18,.32,.46,.60,.74,.86].forEach(t=>{const c={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};pts.push(dorsalEdgeAt(c,n,maxScan,minScan))});return fitLine(pts,a,b)}
+function estimateDorsalLines(points,palmCenter){return points.slice(0,-1).map((q,i)=>estimateSurfaceLine(q,points[i+1],palmCenter))}
+function angleBetweenLines(l1,l2){const a={x:l1[1].x-l1[0].x,y:l1[1].y-l1[0].y},b={x:l2[1].x-l2[0].x,y:l2[1].y-l2[0].y};let s=Math.atan2(a.x*b.y-a.y*b.x,a.x*b.x+a.y*b.y)*180/Math.PI;return Math.max(-180,Math.min(180,-s))}
+function signedValue(v){return Math.abs(v)<1?0:v}
+function formatSigned(v,digits=0){const n=signedValue(v);return `${n>0?'+':''}${n.toFixed(digits)}°`}
+function drawOverlay(points,v,lines){
+  const isThumb=$('finger').value==='thumb';
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.save();ctx.strokeStyle='rgba(32,196,244,.45)';ctx.lineWidth=Math.max(3,canvas.width/320);ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);points.slice(1).forEach(q=>ctx.lineTo(q.x,q.y));ctx.stroke();ctx.restore();
+  const colors=['#f8d34f','#48d6a5','#ff9f68','#bf8cff'];
+  lines.forEach((line,i)=>{ctx.save();ctx.strokeStyle=colors[i];ctx.lineWidth=Math.max(7,canvas.width/170);ctx.beginPath();ctx.moveTo(line[0].x,line[0].y);ctx.lineTo(line[1].x,line[1].y);ctx.stroke();ctx.restore()});
+  points.slice(1,-1).forEach(q=>{ctx.fillStyle='#fff';ctx.strokeStyle='#0f172a';ctx.lineWidth=Math.max(2,canvas.width/500);ctx.beginPath();ctx.arc(q.x,q.y,Math.max(6,canvas.width/140),0,Math.PI*2);ctx.fill();ctx.stroke()});
+  if(isThumb){label(points[1],v.m,'MP');label(points[2],v.p,'IP')}else{label(points[1],v.m,'MCP');label(points[2],v.p,'PIP');label(points[3],v.d,'DIP')}
+}
+function label(q,v,name){const text=`${name} ${formatSigned(v,0)}`;ctx.font=`700 ${Math.max(18,canvas.width/45)}px -apple-system,sans-serif`;ctx.textBaseline='middle';const w=ctx.measureText(text).width+20,h=Math.max(34,canvas.width/28);let x=Math.min(canvas.width-w-8,q.x+14),y=Math.max(h/2+8,q.y-h);ctx.fillStyle='rgba(15,23,42,.82)';ctx.fillRect(x,y-h/2,w,h);ctx.fillStyle='#fff';ctx.fillText(text,x+10,y)}
+function setResults(v){
+  const isThumb=$('finger').value==='thumb';
+  configureJointUI(isThumb);
+  [['mcp','mcpType',v.m],['pip','pipType',v.p]].forEach(([a,b,n])=>{$(a).textContent=formatSigned(n,0);$(b).textContent='背側面基準';$(b).className='type'});
+  if(!isThumb){$('dip').textContent=formatSigned(v.d,0);$('dipType').textContent='背側面基準';$('dipType').className='type'}
+}
+function setNoHand(){$('stability').textContent='手を検出できません';$('stability').className='badge warn';$('capture').disabled=true;['mcp','pip','dip'].forEach(id=>$(id).textContent='—')}
+function updateStability(){if(angleBuffer.length<4){$('stability').textContent='測定中';$('stability').className='badge';return}const maxSd=Math.max(...($('finger').value==='thumb'?['m','p']:['m','p','d']).map(k=>{const mean=angleBuffer.reduce((s,v)=>s+v[k],0)/angleBuffer.length;return Math.sqrt(angleBuffer.reduce((s,v)=>s+(v[k]-mean)**2,0)/angleBuffer.length)}));if(maxSd<2){$('stability').textContent='安定：保存推奨';$('stability').className='badge ok'}else if(maxSd<5){$('stability').textContent='ほぼ安定';$('stability').className='badge'}else{$('stability').textContent='動きがあります';$('stability').className='badge warn'}}
+function requirePatientId(){
+  const id=$('patientId').value.trim();
+  if(id)return id;
+  $('patientId').focus();
+  $('patientId').style.borderColor='#b42318';
+  $('status').textContent='症例コードを入力してください。';
+  $('status').style.color='#b42318';
+  alert('症例コードは必須です。入力してから測定してください。');
+  return '';
+}
+$('patientId').addEventListener('input',()=>{
+  if($('patientId').value.trim()){
+    $('patientId').style.borderColor='';
+    $('status').style.color='';
+  }
+});
+function capture(){
+  const patientId=requirePatientId();
+  if(!patientId||!latest||!dorsalLines||reviewing)return;
+  reviewing=true;running=false;cancelAnimationFrame(raf);
+  reviewCanvas.width=rawFrame.width;reviewCanvas.height=rawFrame.height;
+  reviewNodes=linesToConnectedNodes(dorsalLines);
+  reviewValues=anglesFromReviewNodes();
+  reviewMeta={
+    patientId:patientId,examiner:$('examiner').value.trim(),side:$('side').value,
+    finger:$('finger').selectedOptions[0].text,mode:measurementMode,position:$('position').value,visit:$('visit').value.trim(),examDate:$('examDate').value,recommendedView:fingerGuides[$('finger').value].view
+  };
+  editingLines=true;dragNode=null;$('reviewModeLabel').textContent='修正中';
+  $('reviewOverlay').classList.add('show');$('reviewOverlay').setAttribute('aria-hidden','false');
+  drawReview();$('status').textContent=$('finger').value==='thumb'?'画像を固定しました。4つの連結点をドラッグしてMP・IPを修正し、「確定・保存」を押してください。':'画像を固定しました。5つの連結点をドラッグして修正し、「確定・保存」を押してください。';
+}
+function midpoint(a,b){return{x:(a.x+b.x)/2,y:(a.y+b.y)/2}}
+function linesToConnectedNodes(lines){
+  const nodes=[{x:lines[0][0].x,y:lines[0][0].y}];
+  for(let i=0;i<lines.length-1;i++)nodes.push(midpoint(lines[i][1],lines[i+1][0]));
+  nodes.push({x:lines[lines.length-1][1].x,y:lines[lines.length-1][1].y});
+  return nodes
+}
+function reviewLinesFromNodes(){
+  if(!reviewNodes)return null;
+  return reviewNodes.slice(0,-1).map((_,i)=>[reviewNodes[i],reviewNodes[i+1]])
+}
+function anglesFromReviewNodes(){
+  const lines=reviewLinesFromNodes(),isThumb=$('finger').value==='thumb';
+  return isThumb?{m:angleBetweenLines(lines[0],lines[1]),p:angleBetweenLines(lines[1],lines[2]),d:null}:{m:angleBetweenLines(lines[0],lines[1]),p:angleBetweenLines(lines[1],lines[2]),d:angleBetweenLines(lines[2],lines[3])}
+}
+function drawReview(){
+  if(!reviewNodes)return;
+  reviewCtx.clearRect(0,0,reviewCanvas.width,reviewCanvas.height);
+  reviewCtx.drawImage(rawFrame,0,0,reviewCanvas.width,reviewCanvas.height);
+  const colors=['#f8d34f','#48d6a5','#ff9f68','#bf8cff'];
+  const lines=reviewLinesFromNodes();
+  reviewCtx.lineCap='round';reviewCtx.lineJoin='round';
+  lines.forEach((line,i)=>{
+    reviewCtx.strokeStyle=colors[i];
+    reviewCtx.lineWidth=Math.max(6,reviewCanvas.width/180);
+    reviewCtx.beginPath();reviewCtx.moveTo(line[0].x,line[0].y);reviewCtx.lineTo(line[1].x,line[1].y);reviewCtx.stroke();
+  });
+  if(editingLines){
+    reviewNodes.forEach((q,i)=>{
+      reviewCtx.fillStyle='#fff';
+      reviewCtx.strokeStyle=i===0?colors[0]:i===reviewNodes.length-1?colors[Math.max(0,lines.length-1)]:'#0f172a';
+      reviewCtx.lineWidth=Math.max(3,reviewCanvas.width/450);
+      reviewCtx.beginPath();reviewCtx.arc(q.x,q.y,Math.max(12,reviewCanvas.width/72),0,Math.PI*2);reviewCtx.fill();reviewCtx.stroke();
+      if(i>0&&i<reviewNodes.length-1){
+        reviewCtx.fillStyle='#0f172a';
+        reviewCtx.beginPath();reviewCtx.arc(q.x,q.y,Math.max(3,reviewCanvas.width/320),0,Math.PI*2);reviewCtx.fill();
+      }
+    });
+  }
+  reviewValues=anglesFromReviewNodes();
+  configureJointUI($('finger').value==='thumb');$('reviewMcp').textContent=format(reviewValues.m);$('reviewPip').textContent=format(reviewValues.p);if($('finger').value!=='thumb')$('reviewDip').textContent=format(reviewValues.d);
+  reviewCtx.fillStyle='rgba(15,23,42,.78)';reviewCtx.fillRect(10,10,Math.min(330,reviewCanvas.width-20),42);reviewCtx.fillStyle='#fff';reviewCtx.font=`700 ${Math.max(16,reviewCanvas.width/55)}px -apple-system,sans-serif`;reviewCtx.textBaseline='middle';reviewCtx.fillText('↑ 背側　　↓ 掌側',22,31);
+}
+function canvasPoint(e){const r=reviewCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)*reviewCanvas.width/r.width,y:(e.clientY-r.top)*reviewCanvas.height/r.height}}
+function reviewPointerDown(e){
+  if(!editingLines||!reviewNodes)return;
+  const p=canvasPoint(e);let best=-1,bestD=Infinity;
+  reviewNodes.forEach((q,i)=>{const d=Math.hypot(p.x-q.x,p.y-q.y);if(d<bestD){bestD=d;best=i}});
+  if(best>=0&&bestD<Math.max(48,reviewCanvas.width/17)){dragNode=best;reviewCanvas.setPointerCapture?.(e.pointerId);e.preventDefault()}
+}
+function reviewPointerMove(e){
+  if(!editingLines||dragNode===null||!reviewNodes)return;
+  const p=canvasPoint(e);
+  reviewNodes[dragNode]={x:Math.max(0,Math.min(reviewCanvas.width,p.x)),y:Math.max(0,Math.min(reviewCanvas.height,p.y))};
+  drawReview();e.preventDefault()
+}
+function reviewPointerUp(e){dragNode=null;try{reviewCanvas.releasePointerCapture?.(e.pointerId)}catch(_){} }
+function retake(){
+  $('reviewOverlay').classList.remove('show');$('reviewOverlay').setAttribute('aria-hidden','true');reviewing=false;editingLines=false;reviewNodes=null;reviewValues=null;dragNode=null;
+  if(stream){running=true;lastVideoTime=-1;angleBuffer=[];$('status').textContent='撮り直し中です。側面像を保持してください。';loop()}else{$('status').textContent='カメラを再開してください。'}
+}
+function confirmMeasurement(){
+  if(!reviewValues||!reviewMeta)return;const now=new Date(),stamp=now.toISOString().replace(/[:.]/g,'-'),isThumb=reviewMeta.finger==='母指';
+  const rec={time:now.toLocaleString('ja-JP'),iso:now.toISOString(),...reviewMeta,mcp:+reviewValues.m.toFixed(1),pip:+reviewValues.p.toFixed(1),dip:isThumb?'':+reviewValues.d.toFixed(1),joint1Name:isThumb?'MP':'MCP',joint2Name:isThumb?'IP':'PIP',joint3Name:isThumb?'':'DIP',measurementReference:isThumb?'reviewed_connected_4node_thumb_MP_IP_v11_1_3':'reviewed_connected_5node_finger_specific_view_guidance_v11_1_3'};
+  history.push(rec);renderHistory();showSavedResult(rec);drawReview();
+  $('reviewOverlay').classList.remove('show');$('reviewOverlay').setAttribute('aria-hidden','true');reviewing=false;editingLines=false;reviewNodes=null;reviewValues=null;dragNode=null;
+  $('status').textContent=isThumb?'修正後のMP・IPをこのタブに記録しました。':'修正後のMCP・PIP・DIPをこのタブに記録しました。';if(stream){running=true;lastVideoTime=-1;angleBuffer=[];loop()}
+}
+function showSavedResult(rec){
+  const isThumb=rec.finger==='母指';configureJointUI(isThumb);$('savedResult').classList.add('show');$('savedTitle').textContent=`保存した測定結果：${rec.time}　${rec.side}${rec.finger}`;$('savedMcp').textContent=format(rec.mcp);$('savedPip').textContent=format(rec.pip);if(!isThumb)$('savedDip').textContent=format(rec.dip)
+}
+function renderHistory(){const body=$('history');body.innerHTML='';if(!history.length){body.innerHTML='<tr><td colspan="10" style="text-align:center;color:#64748b">未保存</td></tr>'}else history.slice().reverse().forEach(r=>{const tr=document.createElement('tr');const isThumb=r.finger==='母指';[r.time,r.patientId,r.examiner,r.side,r.finger,r.position,r.visit,`${r.joint1Name||(isThumb?'MP':'MCP')} ${format(r.mcp)}`,`${r.joint2Name||(isThumb?'IP':'PIP')} ${format(r.pip)}`,isThumb?'':`${r.joint3Name||'DIP'} ${format(r.dip)}`].forEach((v,i)=>{const td=document.createElement('td');td.textContent=v||'';if(i===0)td.style.textAlign='left';tr.appendChild(td)});body.appendChild(tr)});$('recordCount').textContent=history.length+'件';$('csv').disabled=!history.length}
+function format(v){return v===''||v===null||v===undefined?'':formatSigned(Number(v),1)}
+function wideRecord(){
+  const patientId=requirePatientId();
+  if(!patientId)return null;
+  const row={patient_id:patientId,exam_date:$('examDate').value,examiner:$('examiner').value.trim(),visit:$('visit').value.trim()};
+  const fingerKey={'母指':'thumb','示指':'index','中指':'middle','環指':'ring','小指':'little'};
+  const sideKey={'右':'right','左':'left'};
+  history.forEach(r=>{
+    const prefix=`${sideKey[r.side]}_${fingerKey[r.finger]}_${r.mode==='ext'?'extension':'flexion'}`;
+    row[`${prefix}_${r.joint1Name}_deg`]=r.mcp;
+    row[`${prefix}_${r.joint2Name}_deg`]=r.pip;
+    if(r.joint3Name)row[`${prefix}_${r.joint3Name}_deg`]=r.dip;
+  });
+  return row;
+}
+function toCSV(){
+  const row=wideRecord();
+  if(!row)return null;
+  const base=['patient_id','exam_date','examiner','visit'];
+  const sides=['right','left'],modes=['flexion','extension'];
+  const specs=[['thumb',['MP','IP']],['index',['MCP','PIP','DIP']],['middle',['MCP','PIP','DIP']],['ring',['MCP','PIP','DIP']],['little',['MCP','PIP','DIP']]];
+  const jointCols=[];
+  sides.forEach(side=>modes.forEach(mode=>specs.forEach(([finger,joints])=>joints.forEach(j=>jointCols.push(`${side}_${finger}_${mode}_${j}_deg`)))));
+  const head=[...base,...jointCols];
+  return '\uFEFF'+head.map(csvEscape).join(',')+'\n'+head.map(k=>csvEscape(row[k]??'')).join(',');
+}
+function csvEscape(v){const s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function downloadCSV(){const patientId=requirePatientId();if(!patientId)return;const csv=toCSV();if(!csv)return;downloadText(`FingerROM_${patientId.replace(/[^a-zA-Z0-9_-]+/g,'_')}.csv`,csv)}
+function clearHistory(){if(!confirm('このタブに記録した測定結果をすべて削除しますか？'))return;history=[];$('savedResult').classList.remove('show');renderHistory()}
+function downloadText(name,text){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));downloadDataURL(name,url);setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function downloadDataURL(name,url){const a=document.createElement('a');a.download=name;a.href=url;document.body.appendChild(a);a.click();a.remove()}
+window.addEventListener('beforeunload',stopTracks);
+</script>
+<script>
+window.addEventListener('error', function(e){
+  const el=document.getElementById('status');
+  if(el && el.textContent.includes('準備')){
+    el.textContent='JavaScript読込エラー：'+(e.message||'外部AIライブラリを読み込めません');
+    el.style.color='#b42318';
+  }
+});
+window.addEventListener('unhandledrejection', function(e){
+  const el=document.getElementById('status');
+  if(el){
+    el.textContent='初期化エラー：'+((e.reason&&e.reason.message)||String(e.reason||'不明なエラー'));
+    el.style.color='#b42318';
+  }
+});
+</script>
+</body>
+</html>
